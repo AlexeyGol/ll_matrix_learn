@@ -8,16 +8,24 @@ on:
 
 jobs:
   build:
-    #----------------------------------------------#
-    # Add your matrix strategy configuration here  #
-    #----------------------------------------------#
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runs: [ubuntu-latest, macos-latest, windows-latest]
+        py_version: [3.7, 3.8, 3.9, 3.10]
+        include:
+          - runs: [ubuntu-latest]
+            py_version: [3.6]
+        exclude:
+          - runs: [windows-latest]
+            py_version: [3.10]
+
+    runs-on: ${{ matrix.runs }}
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.10
+    - name: Set up Python ${{ matrix.py_version }}
       uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.py_version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
